@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "throughmark-devkit": {
+      "type": "http",
+      "url": "http://localhost:9300/mcp",
+      "headers": {
+        "Authorization": "Bearer ${TM_FETCH_TOKEN}"
+      }
+    }
+  }
+}
