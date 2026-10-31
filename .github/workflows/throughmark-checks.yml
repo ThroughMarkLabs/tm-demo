@@ -1,0 +1,43 @@
+# Copy to .github/workflows/throughmark-checks.yml in the covered repo.
+# Runs the same provenance/audit checks as the Cloud Run gate, on the self-hosted
+# runner on the box — outbound-only, no inbound webhook.
+# Branch protection: set "throughmark / provenance" as required check + reviewer ≠ author.
+name: throughmark
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+jobs:
+  provenance:
+    runs-on: [self-hosted, throughmark]
+    if: github.event.action != 'closed'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: throughmark provenance + audit + sources checks
+        run: bash "$TM_HOME/runner/run_checks.sh"
+        env:
+          TM_HOME: ${{ vars.TM_HOME || '/home/ubuntu/ec2' }}
+          PROVENANCE_UNTAGGED: "${{ vars.TM_PROVENANCE_UNTAGGED || 'warn' }}"
+          TM_RECONCILE_MIN_CHARS: "${{ vars.TM_RECONCILE_MIN_CHARS || '' }}"
+          THROUGHMARK_RECONCILE: "${{ vars.THROUGHMARK_RECONCILE || 'on' }}"
+          TM_STATIC_ANALYSIS: "${{ vars.TM_STATIC_ANALYSIS || 'warn' }}"
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+  record-close:
+    runs-on: [self-hosted, throughmark]
+    if: github.event.action == 'closed'
+    steps:
+      - name: record PR close in sink
+        run: bash "$TM_HOME/runner/record_close.sh"
+        env:
+          TM_HOME: ${{ vars.TM_HOME || '/home/ubuntu/ec2' }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_MERGED: ${{ github.event.pull_request.merged }}
+          REPO: ${{ github.repository }}
