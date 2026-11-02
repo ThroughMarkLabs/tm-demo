@@ -1,0 +1,25 @@
+{
+  "statement": {
+    "_type": "https://in-toto.io/Statement/v1",
+    "subject": [
+      {
+        "name": "DDR-7k2m9x",
+        "digest": {
+          "sha256": "5440215ab73a448db8065995846e9c7240595bfd264fc46cf85471a691c5a0b1"
+        }
+      }
+    ],
+    "predicateType": "https://vitrevant.dev/conception/v1",
+    "predicate": {
+      "conceived_by": "human",
+      "developer": "andrewjmorrell@gmail.com",
+      "trace": "T-qo7wqr",
+      "attested_at": "2026-11-02T00:04:51Z"
+    }
+  },
+  "signature": {
+    "identity": "andrewjmorrell@gmail.com",
+    "namespace": "vitrevant",
+    "sshsig": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAggeEpXcHLsvcKh+5E+0DRoXEfMS\ne3qpxQvBHIjmLjoTUAAAAJdml0cmV2YW50AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1l\nZDI1NTE5AAAAQDHfJyI2arrwan6km4Z++2jwEZQ8Vxv0cYy1Un64/oG24m//9kgF53Lj7u\nPUZenrmIvugwuw9LXiE7+bfieSMQg=\n-----END SSH SIGNATURE-----\n"
+  }
+}
