@@ -1,41 +1,46 @@
-# Copy to .github/workflows/throughmark-checks.yml in the covered repo.
-# Runs the same provenance/audit checks as the Cloud Run gate, on the self-hosted
-# runner on the box — outbound-only, no inbound webhook.
-# Branch protection: set "throughmark / provenance" as required check + reviewer ≠ author.
-name: throughmark
+# Copy to a repo as .github/workflows/vitrevant-checks.yml. Runs the SAME provenance/audit checks the
+# Cloud Run gate ran, but on a self-hosted runner on the box — outbound-only, no inbound webhook. The
+# required check name(s) are set in branch protection so a red job blocks the merge (reviewer != author
+# stays enforced by GitHub branch protection).
+name: vitrevant
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 jobs:
   provenance:
-    runs-on: [self-hosted, throughmark]
+    runs-on: [self-hosted, vitrevant]        # the box's runner label
     if: github.event.action != 'closed'
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: throughmark provenance + audit + sources checks
-        run: bash "$TM_HOME/runner/run_checks.sh"
+      - name: vitrevant provenance + audit + sources checks
+        run: bash "$VLI_HOME/runner/run_checks.sh"
         env:
-          TM_HOME: ${{ vars.TM_HOME || '/home/ubuntu/ec2' }}
-          PROVENANCE_UNTAGGED: "${{ vars.TM_PROVENANCE_UNTAGGED || 'warn' }}"
-          TM_RECONCILE_MIN_CHARS: "${{ vars.TM_RECONCILE_MIN_CHARS || '' }}"
-          THROUGHMARK_RECONCILE: "${{ vars.THROUGHMARK_RECONCILE || 'on' }}"
-          TM_STATIC_ANALYSIS: "${{ vars.TM_STATIC_ANALYSIS || 'warn' }}"
+          VLI_HOME: ${{ vars.VLI_HOME || '/home/ubuntu/ec2' }}   # the 14_standalone checkout on the box; run_*.sh derives VLI_SINK_DIR=$VLI_HOME/data/sink
+          # PROVENANCE-UNTAGGED: code outside any fence. warn (default) | block | off.
+          # Run warn first, baseline-tag the repo, then flip to block AND say so in the guardrail.
+          PROVENANCE_UNTAGGED: "${{ vars.VLI_PROVENANCE_UNTAGGED || 'warn' }}"
+          # Demo/rollout knobs (see RUNBOOK "Demo profile"). Leave unset for normal operation.
+          VLI_RECONCILE_MIN_CHARS: "${{ vars.VLI_RECONCILE_MIN_CHARS || '' }}"
+          VITREVANT_RECONCILE: "${{ vars.VITREVANT_RECONCILE || 'on' }}"
+          # 5.1 static analysis: off | warn | block. Tools are enabled per-repo in .vitrevant-static.json;
+          # a configured tool that is missing on the runner is STATIC-NOT-RUN, and fails the gate in block.
+          VLI_STATIC_ANALYSIS: "${{ vars.VLI_STATIC_ANALYSIS || 'warn' }}"
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_TITLE: ${{ github.event.pull_request.title }}       # the viewer shows it; without it PRs are bare numbers
           REPO: ${{ github.repository }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
   record-close:
-    runs-on: [self-hosted, throughmark]
+    runs-on: [self-hosted, vitrevant]
     if: github.event.action == 'closed'
     steps:
       - name: record PR close in sink
-        run: bash "$TM_HOME/runner/record_close.sh"
+        run: bash "$VLI_HOME/runner/record_close.sh"
         env:
-          TM_HOME: ${{ vars.TM_HOME || '/home/ubuntu/ec2' }}
+          VLI_HOME: ${{ vars.VLI_HOME || '/home/ubuntu/ec2' }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
