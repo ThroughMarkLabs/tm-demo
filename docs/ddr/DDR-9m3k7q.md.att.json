@@ -5,7 +5,7 @@
       {
         "name": "DDR-9m3k7q",
         "digest": {
-          "sha256": "2dad0d0e0f1e363ff5ad5223ab0478269a66bd7aaf1ad670e085d19f571f8064"
+          "sha256": "2ff152207c7f3768836fa004e25a0c13317dc5263dd37bcbd2e062314691c582"
         }
       }
     ],
@@ -14,12 +14,12 @@
       "conceived_by": "human",
       "developer": "andrewjmorrell@gmail.com",
       "trace": "",
-      "attested_at": "2026-11-03T03:48:48Z"
+      "attested_at": "2026-11-03T03:54:55Z"
     }
   },
   "signature": {
     "identity": "andrewjmorrell@gmail.com",
     "namespace": "vitrevant",
-    "sshsig": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAggeEpXcHLsvcKh+5E+0DRoXEfMS\ne3qpxQvBHIjmLjoTUAAAAJdml0cmV2YW50AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1l\nZDI1NTE5AAAAQNwNYv3clIbUP0Eryqgn3LUN7BRFiukgr7UJh+KWh1ESxlt746Modz5N/h\nRaO58WmqigpV7aIT413F1WSAjHJQ4=\n-----END SSH SIGNATURE-----\n"
+    "sshsig": "-----BEGIN SSH SIGNATURE-----\nU1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAggeEpXcHLsvcKh+5E+0DRoXEfMS\ne3qpxQvBHIjmLjoTUAAAAJdml0cmV2YW50AAAAAAAAAAZzaGE1MTIAAABTAAAAC3NzaC1l\nZDI1NTE5AAAAQCaq3j6rix+DnuPvFFiIJB1DdcRxRtPm+W+hLjsFlp5TXmbYzWBfAxtDjR\n3u4N8E5wMKYQdcqDdGsdhOw6BctAg=\n-----END SSH SIGNATURE-----\n"
   }
 }

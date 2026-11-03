@@ -14,4 +14,4 @@ Conceived-by: human
 Sources:
 - (none — XOR-delta CRC-8 with poly 0x31 / init 0x00 is a standard, non-novel construction; implemented inline as BOILERPLATE, no external source required)
 
-Requirement: (pending — docs/requirements/ registry is empty; the kfifo_test.c @requirement tag and the corruption-detection goal map to a requirement id once the registry is populated)
+Requirement: SRS-001 (atomic writes — integrity and corruption detection are part of the same guarantee)
