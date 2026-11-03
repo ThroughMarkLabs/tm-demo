@@ -2,7 +2,8 @@
 // Tests for the kfifo-style ring buffer. Covers init validation, basic
 // put/get ordering, the no-wrap case, the wrap-around case (data straddling
 // the physical end of the backing store), full/empty/free transitions,
-// peek (non-destructive), and skip.
+// peek (non-destructive), skip, and CRC-8 dequeue validation (corruption
+// detection + refused poisoned read).
 // PROVENANCE-END: BOILERPLATE
 #include <stdio.h>
 #include <string.h>
@@ -166,6 +167,38 @@ static void test_skip(void)
     CHECK(kfifo_skip(&fifo, 10) == -1, "skip beyond available is an error");
 }
 
+/*
+ * @requirement: kfifo MUST validate a buffer's contents against the stored
+ * CRC-8 checksum before a read is dequeued, so that memory corruption of the
+ * backing store is detected and a poisoned dequeue is refused rather than
+ * delivered.
+ */
+static void test_crc_validation(void)
+{
+    kfifo_t fifo;
+    uint8_t buf[16];
+    uint8_t out[4];
+
+    CHECK(kfifo_init(&fifo, buf, 16) == 0, "init crc");
+
+    const char *w = "abcd";
+    kfifo_put(&fifo, w, 4);
+
+    /* A healthy queue validates and the read succeeds. */
+    size_t n = kfifo_get(&fifo, out, 4);
+    CHECK(n == 4, "get of uncorrupted data succeeds");
+    CHECK(memcmp(out, "abcd", 4) == 0, "get returns the queued bytes");
+
+    /* Re-init and corrupt a queued byte in place, then confirm detection. */
+    kfifo_init(&fifo, buf, 16);
+    kfifo_put(&fifo, w, 4);
+    buf[0] = (uint8_t)(buf[0] ^ 0xFFu);   /* flip the first queued byte */
+
+    n = kfifo_get(&fifo, out, 4);
+    CHECK(n == (size_t)-1, "get of corrupted data is refused (-1)");
+    CHECK(kfifo_is_empty(&fifo) == 0, "read index does not advance on mismatch");
+}
+
 int main(void)
 {
     test_init_validation();
@@ -174,6 +207,7 @@ int main(void)
     test_wrap_around();
     test_peek_non_destructive();
     test_skip();
+    test_crc_validation();
 
     if (g_failures == 0) {
         printf("ALL KFIFO TESTS PASSED\n");

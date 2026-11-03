@@ -19,7 +19,9 @@
 // PROVENANCE-BEGIN: AI-DRAFTED  Agent: opencode-ornith  Trace: T-unknown  Module: kfifo
 #include <stddef.h>
 #include <stdint.h>
+// PROVENANCE-END: AI-DRAFTED
 
+// PROVENANCE-BEGIN: AI-DRAFTED  Agent: opencode-ornith  Trace: T-unknown  Module: kfifo
 #ifndef KFIFO_H
 #define KFIFO_H
 
@@ -40,6 +42,7 @@ typedef struct kfifo {
     size_t    size;    /* Capacity in bytes, a power of two               */
     size_t    in;      /* Total bytes written (unsigned; wraps on overflow) */
     size_t    out;     /* Total bytes read   (unsigned; wraps on overflow)  */
+    uint8_t   crc;     /* XOR-delta CRC-8 of the bytes currently live in queue */
 } kfifo_t;
 
 /*
@@ -85,8 +88,19 @@ size_t kfifo_peek(const kfifo_t *fifo, void *to, size_t len);
 /*
  * Advance the read index by `len` bytes, discarding them without copying.
  * Returns 0 on success, -1 if `len` exceeds the available bytes.
+ *
+ * The stored CRC-8 is advanced over the skipped bytes (they are discarded, not
+ * validated) and the read index moves.
  */
 int kfifo_skip(kfifo_t *fifo, size_t len);
+
+/*
+ * Compute the current CRC-8 over the bytes queued but not yet dequeued. The
+ * value is the same one kfifo_get() compares the dequeue against, so a caller
+ * can capture it at put-time and confirm the queue has not been corrupted at
+ * get-time. Returns 0xFF if `fifo` is NULL.
+ */
+uint8_t kfifo_crc(const kfifo_t *fifo);
 
 #ifdef __cplusplus
 }
