@@ -1,0 +1,60 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "asgard": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Asgard Appliance",
+      "options": {
+        "baseURL": "http://<tailscale-ip>:5280/v1",
+        "apiKey": "apk_89609d3b_f6ac227033033f0d995106b27c3ffbb073aa878bc64309d6",
+        "headers": {
+          "X-VLI-Work": "{env:VLI_WORK}",
+          "X-VLI-Trace": "{env:VLI_TRACE}"
+        }
+      },
+      "models": {
+        "cyankiwi/Ornith-1.5-35B-A3B-AWQ-INT4": {
+          "name": "Ornith-1.5-35B-A3B (Asgard)",
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          },
+          "body": {
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "mcp": {
+    "vitrevant-egress": {
+      "type": "remote",
+      "url": "http://<tailscale-ip>:9100/mcp",
+      "enabled": true,
+      "headers": {
+        "Authorization": "Bearer {env:VLI_FETCH_TOKEN}"
+      }
+    },
+    "vitrevant-refdocs": {
+      "type": "remote",
+      "url": "http://<tailscale-ip>:9200/mcp",
+      "enabled": true,
+      "headers": {
+        "Authorization": "Bearer {env:VLI_FETCH_TOKEN}"
+      }
+    },
+    "vitrevant-devkit": {
+      "type": "remote",
+      "url": "http://<tailscale-ip>:9300/mcp",
+      "enabled": true,
+      "headers": {
+        "Authorization": "Bearer {env:VLI_FETCH_TOKEN}"
+      }
+    }
+  },
+  "tools": {
+    "webfetch": false
+  }
+}
