@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Launch opencode with the Vitrevant WORK ID set, so many sessions map to one unit of work
+# (see ATTRIBUTION.md). Default = current git branch; override with an explicit ticket:
+#   vli-opencode              # work id = git branch
+#   vli-opencode VLI-123      # work id = the ticket
+set -u
+WORK="${1:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)}"
+export VLI_WORK="$WORK"
+export VLI_TRACE="$("$(dirname "$0")/vli-trace" "$WORK")"
+echo "Vitrevant work id: $VLI_WORK  trace id: $VLI_TRACE  (sessions in this run attribute to it)"
+exec opencode

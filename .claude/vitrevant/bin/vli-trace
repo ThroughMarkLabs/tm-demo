@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# vli-trace — print the Vitrevant TRACE id for the current (or named) work item.
+#
+# The trace id is the join key that ties a capture record to the code fence, DDR, and session that share
+# it. It is minted ONCE per work item (a random T-xxxxxx) and persisted, so every caller — the gateway
+# header, the human tagging code, and the AI's vitrevant-tag skill — resolves the SAME id. Stable across
+# a session; unique across work items; never collides at scale.
+#
+#   vli-trace            # id for the current git branch (or $VLI_WORK)
+#   vli-trace VLI-123     # id for an explicit work item / ticket
+#
+# Storage: $VLI_TRACE_DIR (default ~/.vitrevant/traces), one file per work item. Delete a file to rotate.
+set -u
+WORK="${1:-${VLI_WORK:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)}}"
+TDIR="${VLI_TRACE_DIR:-$HOME/.vitrevant/traces}"
+mkdir -p "$TDIR" 2>/dev/null || true
+safe="$(printf '%s' "$WORK" | tr -c 'A-Za-z0-9._-' '_')"
+tf="$TDIR/$safe"
+if [ ! -s "$tf" ]; then
+  printf 'T-%s' "$(LC_ALL=C tr -dc 'a-z0-9' </dev/urandom | head -c6)" > "$tf" 2>/dev/null || true
+fi
+if [ -s "$tf" ]; then cat "$tf"; else printf 'T-%s' "$(LC_ALL=C tr -dc 'a-z0-9' </dev/urandom | head -c6)"; fi

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "asgard/ornith",
+  "providers": {
+    "asgard": {
+      "name": "Asgard Appliance",
+      "package": "aisdk:@ai-sdk/openai-compatible",
+      "settings": {
+        "baseURL": "http://100.67.153.107:5280/v1",
+        "apiKey": "apk_89609d3b_f6ac227033033f0d995106b27c3ffbb073aa878bc64309d6"
+      },
+      "models": {
+        "ornith": {
+          "modelID": "cyankiwi/Ornith-1.5-35B-A3B-AWQ-INT4",
+          "name": "Ornith-1.5-35B-A3B (Asgard)",
+          "limit": { "context": 131072, "output": 8192 },
+          "capabilities": { "tools": true, "input": ["text"], "output": ["text"] },
+          "body": { "chat_template_kwargs": { "enable_thinking": false } },
+          "variants": [
+            { "id": "think", "body": { "chat_template_kwargs": { "enable_thinking": true } } }
+          ]
+        }
+      }
+    }
+  },
+  "mcp": {
+    "vitrevant-egress": {
+      "type": "remote",
+      "url": "http://100.67.153.107:9100/mcp",
+      "protocol": "auto",
+      "enabled": true,
+      "headers": { "Authorization": "Bearer tmf-f5f59643fe479231e5b0b11b304dde9a" }
+    },
+    "vitrevant-refdocs": {
+      "type": "remote",
+      "url": "http://100.67.153.107:9200/mcp",
+      "protocol": "auto",
+      "enabled": true,
+      "headers": { "Authorization": "Bearer tmf-f5f59643fe479231e5b0b11b304dde9a" }
+    },
+    "vitrevant-devkit": {
+      "type": "remote",
+      "url": "http://100.67.153.107:9300/mcp",
+      "protocol": "auto",
+      "enabled": true,
+      "headers": { "Authorization": "Bearer tmf-f5f59643fe479231e5b0b11b304dde9a" }
+    }
+  },
+  "tools": {
+    "webfetch": false
+  }
+}
