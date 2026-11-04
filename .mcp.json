@@ -1,10 +1,10 @@
 {
   "mcpServers": {
-    "throughmark-devkit": {
+    "vitrevant-devkit": {
       "type": "http",
       "url": "http://localhost:9300/mcp",
       "headers": {
-        "Authorization": "Bearer ${TM_FETCH_TOKEN}"
+        "Authorization": "Bearer ${VLI_DEVKIT_TOKEN}"
       }
     }
   }
